@@ -25,10 +25,26 @@ dependencies {
 	implementation 'org.liquibase:liquibase-core'
 	compileOnly 'org.projectlombok:lombok'
 	annotationProcessor 'org.projectlombok:lombok'
+	runtimeOnly 'org.postgresql:postgresql:42.2.26'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testImplementation 'org.springframework.security:spring-security-test'
 }
 
-tasks.named('test') {
+test {
 	useJUnitPlatform()
+}
+
+bootRun {
+	systemProperties = System.properties
+	systemProperty 'spring.profiles.active', findProperty('profile') ?: 'local'
+}
+
+
+def initLocalEnv = tasks.register('initLocalEnv') {
+	doLast {
+		File dockerEnvFile = project.file("${rootDir}/.env")
+		if (!dockerEnvFile.exists()) {
+			dockerEnvFile.write('DB_PASSWORD="' + (('0'..'9') + ('A'..'Z') + ('a'..'z')).shuffled().take(32).join() + '"')
+		}
+	}
 }

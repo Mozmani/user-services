@@ -1,0 +1,47 @@
+version: '3.9'
+
+services:
+  userservicepostgres:
+    env_file: ./.env
+    image: 'postgres:14-alpine'
+    ports:
+      - "5439:5439"
+    container_name: userservicepostgres
+    environment:
+      - POSTGRES_DB=userservicepostgres
+      - POSTGRES_USER=root
+      - POSTGRES_PASSWORD=${DB_PASSWORD}
+      - PGPORT=5439
+      - PGDATABASE=userservicepostgres
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    volumes:
+      - db-data:/var/lib/postgresql/data
+
+  userservice:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: userservice
+    ports:
+      - "8081:8081"
+      - "9091:9091"
+      - "5004:5004"
+    depends_on:
+      userservicepostgres:
+        condition: service_healthy
+    environment:
+      DB_USERNAME: root
+      DB_PASSWORD: ${DB_PASSWORD}
+    command: java -jar -Dspring.profiles.active=local application.jar
+
+networks:
+  default:
+    name: user-service
+
+volumes:
+  db-data:
+    external: false
