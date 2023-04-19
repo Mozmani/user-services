@@ -28,7 +28,6 @@ services:
     container_name: userservice
     ports:
       - "8081:8081"
-      - "9091:9091"
       - "5004:5004"
     depends_on:
       userservicepostgres:
