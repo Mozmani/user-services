@@ -5,4 +5,8 @@
         xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
         http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.8.xsd">
 
+    <changeSet id="initial-tables-added-with-initial-roles" author="Mozmani">
+        <sqlFile path="db/initial-tables.sql"/>
+    </changeSet>
+
 </databaseChangeLog>
