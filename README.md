@@ -15,11 +15,11 @@ by running `docker-compose up --build`
 
 
 ## Setting Up Debug Mode:
-Since we are running inside of a docker container, we will need to create a 
+Since we are running inside a docker container, we will need to create a 
 remote JVM. This can be done very simply by creating a new configuration, to do
 so in IntelliJ simply do the following:
 1) In the run menu, select `edit configurations`
 2) Click the plus, and select `Remote JVM Debug` and give it a name
-3) Change the port to 5004 (This is set in the Dockerfile) and apply
+3) Change the port to `5004` (This is set in the Dockerfile) and apply
 4) Once this is set, you can simply click this as the container is running to debug.
 
