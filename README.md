@@ -2,6 +2,12 @@
 
 A simple microservice to handle users, user roles, and permissions. **(A work in progress)**
 
+## Quick Run:
+#### run `./gradlew runLocal`
+This works if you are using a bash / zsh terminal, and your user is configured to 
+use docker commands. This will perform everything needed and you can skip the first run 
+instructions.
+
 
 ## First Local Launch Instructions:
 1) In order to run this application we must first build the application.

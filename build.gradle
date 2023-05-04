@@ -63,3 +63,20 @@ def initLocalEnv = tasks.register('initLocalEnv') {
 		}
 	}
 }
+
+def runLocal = tasks.register('runLocal') {
+	doLast {
+		exec {
+			workingDir '.'
+			commandLine './gradlew', 'clean', 'build'
+		}
+		exec {
+			workingDir '.'
+			commandLine './gradlew', 'initLocalEnv'
+		}
+		exec {
+			workingDir '.'
+			commandLine 'docker-compose', 'up', '--build'
+		}
+	}
+}
