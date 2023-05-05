@@ -5,7 +5,6 @@ import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import org.apache.tomcat.util.codec.binary.Base64;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
 import java.security.GeneralSecurityException;
 import java.security.KeyFactory;
@@ -14,13 +13,8 @@ import java.security.interfaces.RSAPublicKey;
 import java.security.spec.PKCS8EncodedKeySpec;
 import java.security.spec.X509EncodedKeySpec;
 import java.time.Instant;
-import java.time.LocalDateTime;
-import java.time.OffsetDateTime;
-import java.time.ZoneOffset;
 import java.time.temporal.ChronoUnit;
 import java.util.Date;
-import java.util.List;
-import java.util.UUID;
 
 /**
  * Simple JWT utilities class for authorization handling.
