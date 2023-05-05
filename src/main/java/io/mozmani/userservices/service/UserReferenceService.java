@@ -38,4 +38,15 @@ public class UserReferenceService {
                 uRole -> new SimpleGrantedAuthority(Role.getRoleNameFromId(uRole.getRoleId())))
                 .collect(Collectors.toSet());
     }
+
+    public UserEntity findUserByReference(String userRef) {
+        UserEntity user = userRepository.findByEmail(userRef);
+        if (null == user) {
+            user = userRepository.findByUsername(userRef);
+            if (null == user) {
+                throw new IllegalArgumentException("Incorrect username or password provided.");
+            }
+        }
+        return user;
+    }
 }
