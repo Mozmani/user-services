@@ -18,3 +18,7 @@ spring:
 
 server:
   port: 8081
+
+custom-security:
+  private-key: classpath:private.pem
+  public-key: classpath:public.pem

@@ -3,6 +3,7 @@ package io.mozmani.userservices.security;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
+import com.auth0.jwt.interfaces.DecodedJWT;
 import org.apache.tomcat.util.codec.binary.Base64;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
@@ -51,20 +52,17 @@ public class JWTUtility {
      * Simple JWT verification method.
      * @param token String version of a JWT token.
      * @param publicKey public RSA key for verification.
-     * @param userId user's id.
-     * @param authorities List of authorities AKA user roles.
-     * @return Custom spring authentication context token.
+     * @return Decoded JWT
      * @throws GeneralSecurityException if any issues in verification.
      */
-    public static UserAuthenticationToken verifyUserJWT(
-            String token, String publicKey, UUID userId,
-            List<SimpleGrantedAuthority> authorities) throws GeneralSecurityException {
+    public static DecodedJWT verifyUserJWT(
+            String token, String publicKey) throws GeneralSecurityException {
         RSAPublicKey rsaPublicKey = getPublicKeyFromString(publicKey);
         Algorithm verification = Algorithm.RSA256(rsaPublicKey, null);
         JWTVerifier verifier = JWT.require(verification)
                 .build();
-        verifier.verify(token);
-        return new UserAuthenticationToken(authorities, userId);
+        DecodedJWT jwt = verifier.verify(token);
+        return jwt;
     }
 
     /**

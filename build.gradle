@@ -55,17 +55,17 @@ def initLocalEnv = tasks.register('initLocalEnv') {
 		if (!dockerEnvFile.exists()) {
 			dockerEnvFile.write('DB_PASSWORD="' + (('0'..'9') + ('A'..'Z') + ('a'..'z')).shuffled().take(32).join() + '"')
 		}
-		File privatePemKey = project.file("$rootDir/private.pem")
+		File privatePemKey = project.file("$rootDir/src/main/resources/private.pem")
 		if (!privatePemKey.exists()) {
 			exec {
-				workingDir '.'
+				workingDir './src/main/resources'
 				commandLine 'openssl', 'genrsa', '-out', 'private.pem', '2048'
 			}
 		}
-		File publicPemKey = project.file("$rootDir/public.pem")
+		File publicPemKey = project.file("$rootDir/src/main/resources/public.pem")
 		if (!publicPemKey.exists()) {
 			exec {
-				workingDir '.'
+				workingDir './src/main/resources'
 				commandLine 'openssl', 'rsa', '-in', 'private.pem', '-pubout', '-out', 'public.pem'
 			}
 		}
