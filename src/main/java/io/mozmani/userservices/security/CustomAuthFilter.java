@@ -49,7 +49,6 @@ public class CustomAuthFilter extends OncePerRequestFilter {
                       userReferenceService.findUserAuthorities(user), userId);
                     SecurityContextHolder.getContext().setAuthentication(authenticationToken);
                 }
-
             } catch (Exception e) {
                 log.error("There has been an issue authorizing this request", e);
                 if (SecurityContextHolder.getContext().getAuthentication() != null) {
@@ -57,9 +56,7 @@ public class CustomAuthFilter extends OncePerRequestFilter {
                 }
                 throw new RuntimeException(e.getMessage(), e);
             }
-
         }
-
-
+        filterChain.doFilter(request, response);
     }
 }
