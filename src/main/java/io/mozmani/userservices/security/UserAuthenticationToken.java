@@ -16,21 +16,18 @@ public class UserAuthenticationToken extends AbstractAuthenticationToken {
 
     private final Collection<SimpleGrantedAuthority> authorities;
     private final Set<String> roles;
-    private final String email;
     private final UUID userId;
 
 
     /**
      * Creates a user token for the spring security context.
      * @param authorities This collection acts as the list of roles for the user.
-     * @param email the principle user's email.
      * @param userId The principle user's primary id.
      */
-    public UserAuthenticationToken(Collection<SimpleGrantedAuthority> authorities, String email, UUID userId) {
+    public UserAuthenticationToken(Collection<SimpleGrantedAuthority> authorities, UUID userId) {
         super(authorities);
         this.authorities = authorities;
         this.roles = authorities.stream().map(String::valueOf).collect(Collectors.toSet());
-        this.email = email;
         this.userId = userId;
         this.setAuthenticated(true);
     }

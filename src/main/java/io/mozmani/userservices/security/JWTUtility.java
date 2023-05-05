@@ -12,6 +12,12 @@ import java.security.interfaces.RSAPrivateKey;
 import java.security.interfaces.RSAPublicKey;
 import java.security.spec.PKCS8EncodedKeySpec;
 import java.security.spec.X509EncodedKeySpec;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
+import java.time.temporal.ChronoUnit;
+import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
@@ -21,24 +27,44 @@ import java.util.UUID;
 public class JWTUtility {
 
     /**
+     * Simple method to generate a user JWT.
+     * @param privateKey privat ekey string.
+     * @param publicKey public key string.
+     * @param userID user's id.
+     * @return String jwt.
+     * @throws GeneralSecurityException on token minting error.
+     */
+    public static String generateUserToken(String privateKey, String publicKey, String userID) throws GeneralSecurityException {
+        RSAPrivateKey rsaPrivateKey = getPrivateKeyFromString(privateKey);
+        RSAPublicKey rsaPublicKey = getPublicKeyFromString(publicKey);
+        Instant current = Instant.now();
+
+        return JWT.create().withIssuer("Mozmani.io")
+                .withClaim("userId", userID)
+                .withIssuedAt(Date.from(current))
+                .withExpiresAt(Date.from(current.plus(2, ChronoUnit.HOURS)))
+                .sign(Algorithm.RSA256(rsaPublicKey, rsaPrivateKey));
+    }
+
+
+    /**
      * Simple JWT verification method.
      * @param token String version of a JWT token.
      * @param publicKey public RSA key for verification.
-     * @param email user's email.
      * @param userId user's id.
      * @param authorities List of authorities AKA user roles.
      * @return Custom spring authentication context token.
      * @throws GeneralSecurityException if any issues in verification.
      */
     public static UserAuthenticationToken verifyUserJWT(
-            String token, String publicKey, String email, UUID userId,
+            String token, String publicKey, UUID userId,
             List<SimpleGrantedAuthority> authorities) throws GeneralSecurityException {
         RSAPublicKey rsaPublicKey = getPublicKeyFromString(publicKey);
         Algorithm verification = Algorithm.RSA256(rsaPublicKey, null);
         JWTVerifier verifier = JWT.require(verification)
                 .build();
         verifier.verify(token);
-        return new UserAuthenticationToken(authorities, email, userId);
+        return new UserAuthenticationToken(authorities, userId);
     }
 
     /**
