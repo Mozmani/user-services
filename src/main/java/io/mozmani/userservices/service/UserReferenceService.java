@@ -1,14 +1,17 @@
 package io.mozmani.userservices.service;
 
+import io.mozmani.userservices.domain.UserDTO;
 import io.mozmani.userservices.entity.UserEntity;
 import io.mozmani.userservices.entity.UserRoleEntity;
 import io.mozmani.userservices.enums.Role;
 import io.mozmani.userservices.repository.UserRepository;
 import io.mozmani.userservices.repository.UserRoleRepository;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Service;
 
+import java.time.OffsetDateTime;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
@@ -48,5 +51,32 @@ public class UserReferenceService {
             }
         }
         return user;
+    }
+
+    public boolean existingUserCheck(String email, String username) {
+        Long existingUsers = userRepository.countExistingUserRef(email, username);
+        return existingUsers.equals(0L);
+    }
+
+    @Transactional
+    public UserDTO processNewUser(UserEntity user, List<String> roles) {
+        OffsetDateTime now = OffsetDateTime.now();
+        user.setCreatedOn(now);
+        user.setUpdatedOn(now);
+        userRepository.saveAndFlush(user);
+        if (null != roles && !roles.isEmpty()) {
+            for (String role : roles) {
+                UserRoleEntity userRole = new UserRoleEntity();
+                userRole.setUser(user);
+                userRole.setRoleId(Role.getRoleIdFromName(role));
+                userRoleRepository.save(userRole);
+            }
+        }
+        return new UserDTO(user, roles);
+    }
+
+    public void processUserLoginStamp(UserEntity user) {
+        user.setLastLogin(OffsetDateTime.now());
+        userRepository.save(user);
     }
 }

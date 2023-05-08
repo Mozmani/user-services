@@ -2,6 +2,8 @@ package io.mozmani.userservices.service;
 
 import io.mozmani.userservices.domain.AuthResponsePacket;
 import io.mozmani.userservices.domain.LoginRequest;
+import io.mozmani.userservices.domain.RegisterRequest;
+import io.mozmani.userservices.domain.UserDTO;
 import io.mozmani.userservices.entity.UserEntity;
 import io.mozmani.userservices.security.JWTUtility;
 import lombok.RequiredArgsConstructor;
@@ -43,8 +45,30 @@ public class UserAuthService {
             responsePacket.setSystemMessage("Issue processing the login request.");
             log.error("Issue creating a toke for userRef: {}", req.getUserRef());
         }
+        userReferenceService.processUserLoginStamp(user);
         responsePacket.setAuthorized(true);
         responsePacket.setSystemMessage("Login attempt was successful");
         return responsePacket;
+    }
+
+    public UserDTO registerUser(RegisterRequest req) {
+        boolean newUser = userReferenceService.existingUserCheck(req.getEmail(), req.getUsername());
+        if (!newUser || passwordIsValid(req.getPassword())) {
+            return null;
+        }
+        UserEntity user = new UserEntity();
+        user.setEmail(req.getEmail());
+        user.setUsername(req.getEmail());
+        user.setPassword(BCrypt.hashpw(req.getPassword(), BCrypt.gensalt()));
+        return userReferenceService.processNewUser(user, req.getRoles());
+    }
+
+    /**
+     * Placeholder for password requirements.
+     * @param password a password.
+     * @return value if password meets criteria.
+     */
+    private boolean passwordIsValid(String password) {
+        return password.length() > 3;
     }
 }
