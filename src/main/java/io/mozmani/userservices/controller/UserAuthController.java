@@ -6,6 +6,7 @@ import io.mozmani.userservices.domain.RegisterRequest;
 import io.mozmani.userservices.domain.UserDTO;
 import io.mozmani.userservices.service.UserAuthService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -31,6 +32,6 @@ public class UserAuthController {
     @PostMapping(value = "/register")
     public ResponseEntity<UserDTO> registerUser(@RequestBody RegisterRequest req) {
         UserDTO user = userAuthService.registerUser(req);
-        return ResponseEntity.status(201).body(user);
+        return new ResponseEntity<>(user, HttpStatus.CREATED);
     }
 }

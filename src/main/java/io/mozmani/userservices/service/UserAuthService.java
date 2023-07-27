@@ -12,6 +12,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.stereotype.Service;
 
+import java.io.File;
+import java.io.IOException;
 import java.security.GeneralSecurityException;
 
 /**
@@ -23,7 +25,7 @@ import java.security.GeneralSecurityException;
 public class UserAuthService {
 
     @Value("${custom-security.private-key}")
-    String privateKey;
+    File privateKey;
     @Value("${custom-security.public-key}")
     String publicKey;
 
@@ -44,6 +46,8 @@ public class UserAuthService {
             responsePacket.setAuthorized(false);
             responsePacket.setSystemMessage("Issue processing the login request.");
             log.error("Issue creating a toke for userRef: {}", req.getUserRef());
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
         userReferenceService.processUserLoginStamp(user);
         responsePacket.setAuthorized(true);
@@ -53,12 +57,12 @@ public class UserAuthService {
 
     public UserDTO registerUser(RegisterRequest req) {
         boolean newUser = userReferenceService.existingUserCheck(req.getEmail(), req.getUsername());
-        if (!newUser || passwordIsValid(req.getPassword())) {
+        if (!newUser || !passwordIsValid(req.getPassword())) {
             return null;
         }
         UserEntity user = new UserEntity();
         user.setEmail(req.getEmail());
-        user.setUsername(req.getEmail());
+        user.setUsername(req.getUsername());
         user.setPassword(BCrypt.hashpw(req.getPassword(), BCrypt.gensalt()));
         return userReferenceService.processNewUser(user, req.getRoles());
     }

@@ -6,6 +6,10 @@ import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import org.apache.tomcat.util.codec.binary.Base64;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.charset.Charset;
+import java.nio.file.Files;
 import java.security.GeneralSecurityException;
 import java.security.KeyFactory;
 import java.security.interfaces.RSAPrivateKey;
@@ -29,7 +33,7 @@ public class JWTUtility {
      * @return String jwt.
      * @throws GeneralSecurityException on token minting error.
      */
-    public static String generateUserToken(String privateKey, String publicKey, String userID) throws GeneralSecurityException {
+    public static String generateUserToken(File privateKey, String publicKey, String userID) throws GeneralSecurityException, IOException {
         RSAPrivateKey rsaPrivateKey = getPrivateKeyFromString(privateKey);
         RSAPublicKey rsaPublicKey = getPublicKeyFromString(publicKey);
         Instant current = Instant.now();
@@ -65,8 +69,8 @@ public class JWTUtility {
      * @return RSA private key.
      * @throws GeneralSecurityException on security issue.
      */
-    private static RSAPrivateKey getPrivateKeyFromString(String key) throws GeneralSecurityException {
-        String privateKeyPEM = key;
+    private static RSAPrivateKey getPrivateKeyFromString(File key) throws GeneralSecurityException, IOException {
+        String privateKeyPEM = new String(Files.readAllBytes(key.toPath()), Charset.defaultCharset());
         privateKeyPEM = privateKeyPEM.replace("-----BEGIN PRIVATE KEY-----\n", "");
         privateKeyPEM = privateKeyPEM.replace("-----END PRIVATE KEY-----", "");
         byte[] encoded = Base64.decodeBase64(privateKeyPEM);

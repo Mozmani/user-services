@@ -34,6 +34,7 @@ public class CustomAuthFilter extends OncePerRequestFilter {
                                     FilterChain filterChain) throws ServletException, IOException {
         if (request.getServletPath().equals("/auth/login") || request.getServletPath().equals("/auth/register")) {
             filterChain.doFilter(request, response);
+            return;
         }
 
         String authHeader = request.getHeader(AUTHORIZATION);
